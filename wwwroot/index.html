@@ -26,7 +26,7 @@
             </div>
             <div class="form-group">
                 <label for="amount">Enter Amount</label>
-                <input type="text" id="amount" placeholder="Enter your Amount to Spend" required>
+                <input type="number" id="amount" placeholder="Enter your Amount to Spend" required>
             </div>
             <div class="form-group">
                 <label for="name">Your Name</label>
@@ -41,18 +41,18 @@
         <div id="message" class="success-message"></div>
     </div>
     <script>
-        document.getElementById('paymentForm').addEventListener('submit', function (e) {
+        document.getElementById('paymentForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             // Collect form data
             const studentId = document.getElementById('studentId').value;
             const service = document.getElementById('service').value;
-            const amount = document.getElementById('amount').value;
+            const amount = parseFloat(document.getElementById('amount').value); // Ensure it’s a number
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
 
             // Validate data
-            if (!studentId || !service || !amount || !name || !email) {
-                document.getElementById('message').textContent = 'Please fill in all fields.';
+            if (!studentId || !service || isNaN(amount) || !name || !email) {
+                document.getElementById('message').textContent = 'Please fill in all fields correctly.';
                 return;
             }
 
@@ -65,8 +65,33 @@
                 email
             }));
 
-            // Redirect to card entry page
-            window.location.href = 'card-entry.html';
+            // Prepare payload
+            const payload = {
+                studentId,
+                service,
+                amount,
+                name,
+                email
+            };
+
+            try {
+                // Send data to the backend
+                const response = await fetch('https://localhost:5001/api/payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                // Redirect to card entry page
+                window.location.href = 'card-entry.html';
+            } catch (error) {
+                document.getElementById('message').textContent = 'Error: ' + error.message;
+            }
         });
     </script>
 </body>
