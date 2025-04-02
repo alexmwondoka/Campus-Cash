@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Service Payment - Step 2</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>University Service Payment - Step 2</h1>
+        <form id="cardForm">
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+            </div>
+            <div class="form-group">
+                <label for="expiry">Expiry Date</label>
+                <input type="month" id="expiry" required>
+            </div>
+            <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" placeholder="123" required>
+            </div>
+            <button type="submit">Pay Now</button>
+        </form>
+        <div id="message" class="success-message"></div>
+    </div>
+    <script>
+        document.getElementById('cardForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Collect card data
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiry = document.getElementById('expiry').value;
+            const cvv = document.getElementById('cvv').value;
+
+            // Retrieve previously stored payment data
+            const paymentData = JSON.parse(sessionStorage.getItem('paymentData'));
+
+            if (!paymentData) {
+                document.getElementById('message').textContent = 'Payment data not found.';
+                return;
+            }
+
+            // Create payload for the payment request
+            const payload = {
+                StudentId: paymentData.studentId,
+                Service: paymentData.service,
+                Amount: paymentData.amount,
+                Name: paymentData.name,
+                Email: paymentData.email,
+                CardNumber: cardNumber,
+                Expiry: expiry,
+                CVV: cvv
+            };
+
+            try {
+                // Send data to the backend
+                const response = await fetch('https://localhost:5001/api/payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('message').textContent = result.message;
+                } else {
+                    document.getElementById('message').className = 'error-message';
+                    document.getElementById('message').textContent = result.error || 'Payment Failed!';
+                }
+            } catch (error) {
+                console.error('Error processing payment:', error);
+                document.getElementById('message').className = 'error-message';
+                document.getElementById('message').textContent = 'An error occurred while processing your payment.';
+            }
+        });
+    </script>
+</body>
+</html>

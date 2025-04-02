@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Service Payment - Step 1</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>University Service Payment - Step 1</h1>
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="studentId">Student/Staff ID</label>
+                <input type="text" id="studentId" placeholder="Enter your valid ID" required>
+            </div>
+            <div class="form-group">
+                <label for="service">Select Service</label>
+                <select id="service" required>
+                    <option value="Tuckshop">Tuckshop</option>
+                    <option value="Salon">Salon</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Library Fee">Library Fee</option>
+                    <option value="Printing">Printing</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="amount">Enter Amount</label>
+                <input type="text" id="amount" placeholder="Enter your Amount to Spend" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Your Email</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+            <button type="submit">Next</button>
+        </form>
+        <div id="message" class="success-message"></div>
+    </div>
+    <script>
+        document.getElementById('paymentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Collect form data
+            const studentId = document.getElementById('studentId').value;
+            const service = document.getElementById('service').value;
+            const amount = document.getElementById('amount').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            // Validate data
+            if (!studentId || !service || !amount || !name || !email) {
+                document.getElementById('message').textContent = 'Please fill in all fields.';
+                return;
+            }
+
+            // Store data in session storage
+            sessionStorage.setItem('paymentData', JSON.stringify({
+                studentId,
+                service,
+                amount,
+                name,
+                email
+            }));
+
+            // Redirect to card entry page
+            window.location.href = 'card-entry.html';
+        });
+    </script>
+</body>
+</html>
